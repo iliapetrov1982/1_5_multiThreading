@@ -1,45 +1,38 @@
 package task1;
 
+import java.util.concurrent.Semaphore;
+
 public class Foo {
-    boolean valueSet = false;
-    boolean valueSet1 = false;
-    private Object key = new Object();
+    private final Semaphore semaphore1 = new Semaphore(1);
+    private final Semaphore semaphore2 = new Semaphore(0);
+    private final Semaphore semaphore3 = new Semaphore(0);
 
-    public synchronized void first() {
-        while (valueSet)
-            try {
-                wait();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        valueSet = true;
+    public void first() {
+        try {
+            semaphore1.acquire();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         System.out.print("first");
-        notifyAll();
+        semaphore2.release();
     }
 
-    public synchronized void second() {
-        while (!valueSet)
-            try {
-                wait();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        valueSet = false;
+    public void second() {
+        try {
+            semaphore2.acquire();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         System.out.print("second");
-        notify();
-        valueSet = false;
-        valueSet1 = true;
+        semaphore3.release();
     }
 
-
-    public synchronized void third() {
-        while (!valueSet1)
-            try {
-                wait();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+    public void third() {
+        try {
+            semaphore3.acquire();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         System.out.print("third");
-        valueSet1 = false;
     }
 }
